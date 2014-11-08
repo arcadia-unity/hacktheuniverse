@@ -7,27 +7,35 @@
 (defn- vector* [^double x ^double y ^double z]
   (Vector3. x y z))
 
-(def star-names (future (->> "Assets/Hack/data/star-names.edn"
-                             slurp
-                             edn/read-string
-                             (reduce (fn [acc star] 
-                                       (assoc acc
-                                         (apply vector* ((juxt :x :y :z) star))
-                                         (star :name)))
-                                     {} ))))
+; (def star-names (future (->> "Assets/Hack/data/star-names.edn"
+; slurp
+; edn/read-string
+; (reduce (fn [acc star] 
+; (assoc acc
+; (apply vector* ((juxt :x :y :z) star))
+; (star :name)))
+; {} ))))
+; 
+; (def stars (future (->> "Assets/Hack/data/stars.edn"
+; slurp
+; edn/read-string
+; (map #(hash-map
+; :position (apply vector* ((juxt :x :y :z) %))
+; :velocity (apply vector* ((juxt :x :y :z) %))
+; :speed (% :speed)
+; :hip (% :hip)))
+; (map #(assoc %
+; :name
+; (or (@star-names (% :position))
+; (str "HIP" (% :hip))))))))
 
-(def stars (future (->> "Assets/Hack/data/stars.edn"
-                        slurp
-                        edn/read-string
-                        (map #(hash-map
-                                :position (apply vector* ((juxt :x :y :z) %))
-                                :velocity (apply vector* ((juxt :x :y :z) %))
-                                :speed (% :speed)
-                                :hip (% :hip)))
-                        (map #(assoc %
-                                :name
-                                (or (@star-names (% :position))
-                                    (str "HIP" (% :hip))))))))
+(def planets (->> "Assets/Hack/data/exoplanets.edn"
+                  slurp
+                  edn/read-string
+                  (map #(hash-map
+                          :position (apply vector* ((juxt :x :y :z) %))
+                          :name (% :name)))))
+
 
 (comment (pprint (->> @stars (drop 590)
                       (take 20)))
